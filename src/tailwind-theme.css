@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* Fuentes de contenido para detectar clases utilitarias */
+@source "../src/**/*.{html,ts}";
+
+/* Modo oscuro por clase: ThemeService pone .dark en <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Tema Tailwind de CRMS (según Figma "Maquetado CRMS") */
+  --color-primario: #e41f07;
+  --color-primario-oscuro: #c21a06;
+  --color-primario-suave: #fce9e6;
+  --color-rojo-enlace: #fc0027;
+  --color-azul-enlace: #3538cd;
+  --color-violeta: #4a00e5;
+  --color-violeta-suave: #f3edff;
+  --color-exito: #27ae60;
+  --color-peligro: #ef1e1e;
+  --color-cian: #06aed4;
+  --color-facebook: #2f80ed;
+  --color-apple: #0a0c0c;
+
+  --color-fondo: #f7f8f9;
+  --color-superficie: #ffffff;
+  --color-linea: #e8e8e8;
+  --color-divisor: #cdcdcd;
+  --color-texto: #1f2020;
+  --color-texto-suave: #707070;
+  --color-texto-tenue: #b5b5b5;
+  --color-placeholder: #9d9d9d;
+  --color-icono-fondo: #f6f6f6;
+
+  /* Botones de acceso rápido del header */
+  --color-menta: #cfe9e6;
+  --color-lavanda: #d7d7f5;
+  --color-crema: #f9f1d8;
+
+  --font-body: "Golos Text", system-ui, sans-serif;
+  --font-nunito: "Nunito", system-ui, sans-serif;
+
+  --shadow-suave: 0 4px 4px rgb(219 219 219 / 0.25);
+}
+
+/*
+ * Modo oscuro: se redefinen los mismos tokens, así cada utilidad (bg-superficie, text-texto,
+ * border-linea...) cambia sola sin tocar las plantillas. El rojo de marca se mantiene.
+ */
+.dark {
+  color-scheme: dark;
+
+  --color-primario-suave: #3a1712;
+  --color-rojo-enlace: #ff4d63;
+  --color-azul-enlace: #8f92ff;
+  --color-violeta: #b69cff;
+  --color-violeta-suave: #2a2142;
+
+  --color-fondo: #0f1114;
+  --color-superficie: #181b20;
+  --color-linea: #2b3038;
+  --color-divisor: #3a404a;
+  --color-texto: #eceef1;
+  --color-texto-suave: #a3a8b0;
+  --color-texto-tenue: #6c727c;
+  --color-placeholder: #6f757f;
+  --color-icono-fondo: #23272e;
+
+  --color-menta: #1d3a36;
+  --color-lavanda: #2a2a4d;
+  --color-crema: #3b3320;
+
+  --shadow-suave: 0 2px 4px rgb(0 0 0 / 0.18);
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@layer utilities {
+  .animate-aparecer {
+    animation: aparecer 0.2s ease-out both;
+  }
+}

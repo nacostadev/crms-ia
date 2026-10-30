@@ -1,0 +1,57 @@
+<div class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+  <label class="flex items-center gap-2 text-sm text-texto-suave">
+    Show
+    <span class="relative">
+      <select
+        [value]="tamanio()"
+        (change)="cambiarTamanio($any($event.target).value)"
+        class="h-[38px] cursor-pointer appearance-none rounded-[5px] border border-linea bg-superficie py-1.5 pl-2 pr-7 text-sm text-texto shadow-suave outline-none focus:border-primario"
+        aria-label="Entries per page"
+      >
+        @for (opcion of opcionesTamanio(); track opcion) {
+          <option [value]="opcion" [selected]="opcion === tamanio()">{{ opcion }}</option>
+        }
+      </select>
+      <app-icon name="chevron-down" [size]="14" class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-texto" />
+    </span>
+    Entries
+  </label>
+
+  <nav class="flex items-center gap-2" aria-label="Pagination">
+    <button
+      type="button"
+      class="grid size-[38px] place-items-center rounded-[5px] border border-linea bg-superficie text-texto shadow-suave hover:bg-fondo disabled:opacity-40"
+      [disabled]="pagina() === 1"
+      (click)="irA(pagina() - 1)"
+      aria-label="Previous page"
+    >
+      <app-icon name="chevron-left" [size]="14" />
+    </button>
+
+    @for (numero of numeros(); track numero) {
+      <button
+        type="button"
+        class="grid size-[38px] place-items-center rounded-[5px] text-sm shadow-suave transition"
+        [class]="
+          numero === pagina()
+            ? 'bg-primario text-white'
+            : 'border border-linea bg-superficie text-texto-suave hover:bg-fondo'
+        "
+        (click)="irA(numero)"
+        [attr.aria-current]="numero === pagina() ? 'page' : null"
+      >
+        {{ numero }}
+      </button>
+    }
+
+    <button
+      type="button"
+      class="grid size-[38px] place-items-center rounded-[5px] border border-linea bg-superficie text-texto shadow-suave hover:bg-fondo disabled:opacity-40"
+      [disabled]="pagina() === totalPaginas()"
+      (click)="irA(pagina() + 1)"
+      aria-label="Next page"
+    >
+      <app-icon name="chevron-right" [size]="14" />
+    </button>
+  </nav>
+</div>

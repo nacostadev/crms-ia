@@ -1,0 +1,180 @@
+<div class="flex flex-col gap-6">
+  <!-- Título, breadcrumbs y acciones -->
+  <header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-1">
+      <div class="flex items-center gap-2">
+        <h1 class="text-xl font-bold leading-6 text-texto">Pipeline</h1>
+        <span class="rounded-[5px] border border-primario bg-primario-suave px-1.5 py-0.5 text-xs font-medium text-primario">
+          {{ pipelines().length }}
+        </span>
+      </div>
+      <nav class="flex items-center gap-2 text-sm text-texto-suave" aria-label="Breadcrumb">
+        <a routerLink="/pipeline" class="hover:text-texto">Home</a>
+        <app-icon name="chevron-right" [size]="14" />
+        <span aria-current="page">Pipeline</span>
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="relative">
+        @if (menuExportar()) {
+          <div class="fixed inset-0 z-20" (click)="menuExportar.set(false)"></div>
+        }
+        <button
+          type="button"
+          class="flex h-[38px] items-center gap-2.5 rounded-[5px] border border-linea bg-superficie px-2 text-sm text-texto shadow-suave hover:bg-fondo"
+          (click)="menuExportar.set(!menuExportar())"
+          [attr.aria-expanded]="menuExportar()"
+        >
+          <span class="flex items-center gap-2"><app-icon name="package-export" /> Export</span>
+          <app-icon name="chevron-down" [size]="14" />
+        </button>
+        @if (menuExportar()) {
+          <div class="animate-aparecer absolute left-0 z-30 mt-2 w-44 rounded-[5px] border border-linea bg-superficie p-1.5 shadow-lg sm:left-auto sm:right-0">
+            <button type="button" class="w-full rounded-[5px] px-3 py-2 text-left text-sm hover:bg-fondo" (click)="exportarCsv()">
+              Export as CSV
+            </button>
+          </div>
+        }
+      </div>
+      <button
+        type="button"
+        class="grid size-[38px] place-items-center rounded-[5px] border border-linea bg-superficie text-texto shadow-suave hover:bg-fondo"
+        (click)="refrescar()"
+        aria-label="Refresh"
+        title="Refresh"
+      >
+        <app-icon name="refresh" />
+      </button>
+      <button
+        type="button"
+        class="grid size-[38px] place-items-center rounded-[5px] border border-linea bg-superficie text-texto shadow-suave hover:bg-fondo"
+        (click)="filtrosColapsados.set(!filtrosColapsados())"
+        [attr.aria-label]="filtrosColapsados() ? 'Expand filters' : 'Collapse filters'"
+        [title]="filtrosColapsados() ? 'Expand filters' : 'Collapse filters'"
+      >
+        <app-icon [name]="filtrosColapsados() ? 'transition-bottom' : 'transition-top'" />
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <section class="shadow-suave">
+    <div class="flex flex-col gap-3 border border-linea bg-superficie px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+      <label class="relative block w-full sm:w-[270px]">
+        <span class="sr-only">Search pipelines</span>
+        <app-icon name="search" [size]="14" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-texto" />
+        <input
+          type="search"
+          placeholder="Search"
+          [value]="busqueda()"
+          (input)="busqueda.set($any($event.target).value)"
+          class="h-[38px] w-full rounded-[5px] border border-linea bg-superficie pl-[34px] pr-3 text-sm text-texto shadow-suave outline-none placeholder:text-placeholder focus:border-primario"
+        />
+      </label>
+
+      <div class="flex flex-wrap items-center gap-3">
+        @if (seleccion().size) {
+          <button
+            type="button"
+            class="flex h-[38px] items-center gap-1.5 rounded-[5px] border border-peligro px-3 text-sm font-medium text-peligro hover:bg-primario-suave"
+            (click)="eliminarSeleccionados()"
+          >
+            <app-icon name="trash" [size]="14" /> Delete ({{ seleccion().size }})
+          </button>
+        }
+        <button
+          type="button"
+          class="flex h-[38px] items-center justify-center gap-1 rounded-[5px] bg-primario px-4 text-sm font-medium text-white hover:bg-primario-oscuro"
+          (click)="formulario.set({ pipeline: null })"
+        >
+          <app-icon name="square-rounded-plus" [filled]="true" [size]="14" />
+          Add Pipeline
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-5 bg-superficie px-4 py-4 sm:px-5">
+      @if (!filtrosColapsados()) {
+        <app-pipeline-toolbar
+          [rangoDatos]="rangoDatos()"
+          [(estado)]="estado"
+          [(etapas)]="etapas"
+          [(rango)]="rango"
+          [(orden)]="orden"
+          [(columnasOcultas)]="columnasOcultas"
+        />
+      }
+
+      <app-pipeline-table
+        [filas]="visibles()"
+        [columnasOcultas]="columnasOcultas()"
+        [(orden)]="orden"
+        [(seleccion)]="seleccion"
+        (ver)="detalleId.set($event.id)"
+        (editar)="formulario.set({ pipeline: $event })"
+        (eliminar)="porEliminar.set([$event])"
+      />
+
+      <app-pagination [total]="filtrados().length" [(pagina)]="pagina" [(tamanio)]="tamanio" />
+    </div>
+  </section>
+</div>
+
+@if (detalle(); as pipeline) {
+  <app-modal titulo="Pipeline Details" (cerrar)="detalleId.set(null)">
+    <app-pipeline-detail
+      [pipeline]="pipeline"
+      (cerrar)="detalleId.set(null)"
+      (editar)="detalleId.set(null); formulario.set({ pipeline: $event })"
+      (eliminar)="detalleId.set(null); porEliminar.set([$event])"
+    />
+  </app-modal>
+}
+
+@if (formulario(); as form) {
+  <app-modal
+    [titulo]="form.pipeline ? 'Edit Pipeline' : 'Add Pipeline'"
+    (cerrar)="formulario.set(null)"
+  >
+    <app-pipeline-form [pipeline]="form.pipeline" (guardar)="onGuardar($event)" (cancelar)="formulario.set(null)" />
+  </app-modal>
+}
+
+@if (porEliminar(); as lista) {
+  <app-modal titulo="Delete Pipeline" (cerrar)="porEliminar.set(null)">
+    <p class="text-sm text-texto-suave">
+      @if (lista.length === 1) {
+        Are you sure you want to delete <span class="font-semibold text-texto">{{ lista[0].nombre }}</span>?
+      } @else {
+        Are you sure you want to delete <span class="font-semibold text-texto">{{ lista.length }} pipelines</span>?
+      }
+      This action cannot be undone.
+    </p>
+    <div class="mt-6 flex justify-end gap-2">
+      <button
+        type="button"
+        class="h-[38px] rounded-[5px] border border-linea px-4 text-sm font-medium text-texto hover:bg-fondo"
+        (click)="porEliminar.set(null)"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="h-[38px] rounded-[5px] bg-primario px-4 text-sm font-medium text-white hover:bg-primario-oscuro"
+        (click)="confirmarEliminar()"
+      >
+        Delete
+      </button>
+    </div>
+  </app-modal>
+}
+
+@if (aviso()) {
+  <div
+    class="animate-aparecer fixed bottom-14 left-1/2 z-50 -translate-x-1/2 rounded-[5px] bg-[#1f2020] px-4 py-2.5 text-sm text-white shadow-lg dark:border dark:border-linea dark:bg-[#2b3038]"
+    role="status"
+  >
+    {{ aviso() }}
+  </div>
+}

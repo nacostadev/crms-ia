@@ -1,0 +1,161 @@
+@if (menuAbierto()) {
+  <div class="fixed inset-0 z-20" (click)="menuAbierto.set(null)"></div>
+}
+
+<ng-template #encabezado let-campo="campo" let-etiqueta="etiqueta">
+  <button type="button" class="flex items-center gap-2 text-[13px] font-semibold text-texto" (click)="ordenarPor(campo)">
+    {{ etiqueta }}
+    <app-icon
+      [name]="orden().campo === campo ? (orden().asc ? 'arrow-up' : 'arrow-down') : 'arrows-up-down'"
+      [size]="14"
+      [class]="orden().campo === campo ? 'text-primario' : 'text-texto-suave'"
+    />
+  </button>
+</ng-template>
+
+<!-- En mobile y tablet la tabla mantiene sus columnas y se desplaza horizontalmente -->
+<div class="overflow-x-auto border border-linea">
+  <table class="w-full min-w-[1080px] border-collapse text-left text-sm">
+    <thead class="bg-fondo">
+      <tr class="h-9 [&>th]:border-b [&>th]:border-linea [&>th]:px-2.5 [&>th]:py-2">
+        <th class="w-9">
+          <input
+            type="checkbox"
+            class="block size-4 cursor-pointer rounded accent-primario"
+            [checked]="todasSeleccionadas()"
+            [indeterminate]="algunaSeleccionada()"
+            (change)="alternarTodas()"
+            aria-label="Select all"
+          />
+        </th>
+        <th class="w-[166px]">
+          <ng-container *ngTemplateOutlet="encabezado; context: { campo: 'nombre', etiqueta: 'Pipeline Name' }" />
+        </th>
+        @if (visible('valorTotal')) {
+          <th class="w-[212px]">
+            <ng-container *ngTemplateOutlet="encabezado; context: { campo: 'valorTotal', etiqueta: 'Total Deal Value' }" />
+          </th>
+        }
+        @if (visible('nroDeals')) {
+          <th class="w-[136px]">
+            <ng-container *ngTemplateOutlet="encabezado; context: { campo: 'nroDeals', etiqueta: 'No of Deals' }" />
+          </th>
+        }
+        @if (visible('etapa')) {
+          <th class="w-[212px]">
+            <ng-container *ngTemplateOutlet="encabezado; context: { campo: 'etapa', etiqueta: 'Stages' }" />
+          </th>
+        }
+        @if (visible('fechaCreacion')) {
+          <th class="w-[175px]">
+            <ng-container *ngTemplateOutlet="encabezado; context: { campo: 'fechaCreacion', etiqueta: 'Created Date' }" />
+          </th>
+        }
+        @if (visible('estado')) {
+          <th class="w-[115px]">
+            <ng-container *ngTemplateOutlet="encabezado; context: { campo: 'estado', etiqueta: 'Status' }" />
+          </th>
+        }
+        <th class="w-[61px] text-[13px] font-semibold text-texto">Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (fila of filas(); track fila.id) {
+        <tr
+          class="h-12 transition-colors [&:not(:last-child)>td]:border-b [&:not(:last-child)>td]:border-linea [&>td]:px-2.5 [&>td]:py-3"
+          [class]="seleccion().has(fila.id) ? 'bg-primario-suave' : 'hover:bg-fondo'"
+        >
+          <td>
+            <input
+              type="checkbox"
+              class="block size-4 cursor-pointer rounded accent-primario"
+              [checked]="seleccion().has(fila.id)"
+              (change)="alternarFila(fila.id)"
+              [attr.aria-label]="'Select ' + fila.nombre"
+            />
+          </td>
+          <td>
+            <button type="button" class="text-left font-medium text-texto hover:text-primario hover:underline" (click)="ver.emit(fila)">
+              {{ fila.nombre }}
+            </button>
+          </td>
+          @if (visible('valorTotal')) {
+            <td class="text-texto-suave tabular-nums">{{ formatearMonto(fila.valorTotal) }}</td>
+          }
+          @if (visible('nroDeals')) {
+            <td class="text-texto-suave tabular-nums">{{ fila.nroDeals }}</td>
+          }
+          @if (visible('etapa')) {
+            <td>
+              <span class="flex items-center gap-2 text-texto">
+                <span class="h-[5px] w-[59px] shrink-0 rounded-full" [style.background]="etapa(fila.etapa).color"></span>
+                {{ etapa(fila.etapa).etiqueta }}
+              </span>
+            </td>
+          }
+          @if (visible('fechaCreacion')) {
+            <td class="text-texto-suave">{{ formatearFecha(fila.fechaCreacion) }}</td>
+          }
+          @if (visible('estado')) {
+            <td>
+              <span
+                class="inline-block rounded-[5px] px-1.5 py-0.5 text-xs font-medium text-white"
+                [class]="fila.estado === 'active' ? 'bg-exito' : 'bg-peligro'"
+              >
+                {{ fila.estado === 'active' ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+          }
+          <td>
+            <button
+              type="button"
+              class="grid size-6 place-items-center rounded-[5px] border border-linea bg-superficie text-texto shadow-suave hover:bg-fondo"
+              (click)="abrirMenu(fila.id, $event)"
+              [attr.aria-expanded]="menuAbierto()?.id === fila.id"
+              [attr.aria-label]="'Actions for ' + fila.nombre"
+            >
+              <app-icon name="dots-vertical" />
+            </button>
+
+            @if (menuAbierto(); as menu) {
+              @if (menu.id === fila.id) {
+              <div
+                class="animate-aparecer fixed z-30 w-36 rounded-[5px] border border-linea bg-superficie p-1.5 shadow-lg"
+                [style.top.px]="menu.top"
+                [style.left.px]="menu.left"
+              >
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-sm text-texto hover:bg-fondo"
+                  (click)="accion('ver', fila)"
+                >
+                  <app-icon name="eye" /> View
+                </button>
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-sm text-texto hover:bg-fondo"
+                  (click)="accion('editar', fila)"
+                >
+                  <app-icon name="edit" /> Edit
+                </button>
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-2 rounded-[5px] px-2.5 py-1.5 text-sm text-peligro hover:bg-primario-suave"
+                  (click)="accion('eliminar', fila)"
+                >
+                  <app-icon name="trash" /> Delete
+                </button>
+              </div>
+              }
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="8" class="px-5 py-12 text-center text-sm text-texto-suave">No pipelines match your filters.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

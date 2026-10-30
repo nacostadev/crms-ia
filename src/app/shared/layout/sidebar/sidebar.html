@@ -1,0 +1,100 @@
+@if (abierto()) {
+  <div class="fixed inset-0 z-30 bg-black/50 lg:hidden" (click)="cerrar.emit()"></div>
+}
+
+<aside
+  class="fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-linea bg-superficie transition-[transform,width] duration-200 lg:translate-x-0"
+  [class.-translate-x-full]="!abierto()"
+  [class]="colapsado() ? 'lg:w-[76px]' : ''"
+>
+  <div class="flex h-[63px] shrink-0 items-center justify-between gap-2 px-4">
+    @if (!colapsado()) {
+      <a routerLink="/pipeline" (click)="cerrar.emit()" class="shrink-0">
+        <img src="assets/images/logo-crms-sidebar.svg" alt="CRMS" width="106" height="31" class="dark:hidden" />
+        <img src="assets/images/logo-crms-sidebar-dark.svg" alt="CRMS" width="106" height="31" class="hidden dark:block" />
+      </a>
+    }
+    <!-- Desktop: colapsa a solo íconos. Mobile/tablet: cierra el drawer. -->
+    <button
+      type="button"
+      class="hidden size-6 place-items-center rounded-full text-texto hover:bg-fondo lg:grid"
+      [class.mx-auto]="colapsado()"
+      [class.rotate-180]="colapsado()"
+      (click)="alternarColapso.emit()"
+      [attr.aria-label]="colapsado() ? 'Expand sidebar' : 'Collapse sidebar'"
+    >
+      <app-icon name="arrow-bar-to-left" />
+    </button>
+    <button
+      type="button"
+      class="grid size-6 place-items-center rounded-full text-texto hover:bg-fondo lg:hidden"
+      (click)="cerrar.emit()"
+      aria-label="Close menu"
+    >
+      <app-icon name="x" />
+    </button>
+  </div>
+
+  <nav class="flex-1 overflow-y-auto px-4 pb-4 pt-2" aria-label="Main navigation">
+    @for (seccion of menu; track seccion.titulo; let primera = $first) {
+      <div class="mb-4">
+        @if (!colapsado()) {
+          <p
+            class="text-[13px] font-medium uppercase leading-5"
+            [class]="primera ? 'mb-3 text-texto-suave' : 'mb-2 text-texto-tenue'"
+          >
+            {{ seccion.titulo }}
+          </p>
+        } @else {
+          <hr class="mx-auto mb-3 w-7 border-linea" />
+        }
+
+        <ul class="flex flex-col" [class]="primera ? 'gap-[5px]' : 'gap-1'">
+          @for (item of seccion.items; track item.etiqueta) {
+            <li>
+              @if (item.ruta) {
+                <a
+                  [routerLink]="item.ruta"
+                  routerLinkActive
+                  #rla="routerLinkActive"
+                  (click)="cerrar.emit()"
+                  class="group flex h-9 items-center gap-2 rounded-[5px] p-1 text-sm font-medium"
+                  [class]="rla.isActive ? 'bg-primario-suave text-primario' : 'text-texto hover:bg-fondo'"
+                  [title]="colapsado() ? item.etiqueta : ''"
+                >
+                  <span
+                    class="grid size-7 shrink-0 place-items-center rounded"
+                    [class]="rla.isActive ? 'bg-primario text-white' : 'bg-icono-fondo text-texto'"
+                  >
+                    <app-icon [name]="item.icono" />
+                  </span>
+                  @if (!colapsado()) {
+                    <span class="truncate">{{ item.etiqueta }}</span>
+                  }
+                </a>
+              } @else {
+                <!-- Opciones del diseño sin página todavía -->
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-2 rounded-[5px] text-left text-sm font-medium text-texto hover:bg-fondo"
+                  [class]="item.desplegable ? 'h-10 p-1.5' : 'h-9 p-1'"
+                  [title]="colapsado() ? item.etiqueta : 'Coming soon'"
+                >
+                  <span class="grid size-7 shrink-0 place-items-center rounded bg-icono-fondo">
+                    <app-icon [name]="item.icono" />
+                  </span>
+                  @if (!colapsado()) {
+                    <span class="flex-1 truncate">{{ item.etiqueta }}</span>
+                    @if (item.desplegable) {
+                      <app-icon name="chevron-down" class="text-texto" />
+                    }
+                  }
+                </button>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </nav>
+</aside>

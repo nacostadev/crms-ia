@@ -1,0 +1,86 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="grid gap-4 sm:grid-cols-2" novalidate>
+  <div class="flex flex-col gap-1 sm:col-span-2">
+    <label for="pl-nombre" class="text-sm font-medium text-texto">Pipeline Name</label>
+    <input
+      id="pl-nombre"
+      formControlName="nombre"
+      class="h-[38px] rounded-[5px] border px-2 text-sm shadow-suave outline-none focus:border-primario"
+      [class.border-linea]="!invalido('nombre')"
+      [class.border-primario]="invalido('nombre')"
+    />
+    @if (invalido('nombre')) {
+      <p class="text-xs text-primario">Pipeline name is required.</p>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="pl-valor" class="text-sm font-medium text-texto">Total Deal Value ($)</label>
+    <input
+      id="pl-valor"
+      type="number"
+      min="1"
+      formControlName="valorTotal"
+      class="h-[38px] rounded-[5px] border px-2 text-sm shadow-suave outline-none focus:border-primario"
+      [class.border-linea]="!invalido('valorTotal')"
+      [class.border-primario]="invalido('valorTotal')"
+    />
+    @if (invalido('valorTotal')) {
+      <p class="text-xs text-primario">Value must be greater than 0.</p>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="pl-deals" class="text-sm font-medium text-texto">No of Deals</label>
+    <input
+      id="pl-deals"
+      type="number"
+      min="0"
+      formControlName="nroDeals"
+      class="h-[38px] rounded-[5px] border px-2 text-sm shadow-suave outline-none focus:border-primario"
+      [class.border-linea]="!invalido('nroDeals')"
+      [class.border-primario]="invalido('nroDeals')"
+    />
+    @if (invalido('nroDeals')) {
+      <p class="text-xs text-primario">Enter a valid number.</p>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="pl-etapa" class="text-sm font-medium text-texto">Stage</label>
+    <select
+      id="pl-etapa"
+      formControlName="etapa"
+      class="h-[38px] rounded-[5px] border border-linea bg-superficie px-2 text-sm shadow-suave outline-none focus:border-primario"
+    >
+      @for (etapa of etapas; track etapa.id) {
+        <option [value]="etapa.id">{{ etapa.etiqueta }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <label for="pl-estado" class="text-sm font-medium text-texto">Status</label>
+    <select
+      id="pl-estado"
+      formControlName="estado"
+      class="h-[38px] rounded-[5px] border border-linea bg-superficie px-2 text-sm shadow-suave outline-none focus:border-primario"
+    >
+      @for (estado of estados; track estado.id) {
+        <option [value]="estado.id">{{ estado.etiqueta }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="flex justify-end gap-2 sm:col-span-2">
+    <button
+      type="button"
+      class="h-[38px] rounded-[5px] border border-linea px-4 text-sm font-medium text-texto hover:bg-fondo"
+      (click)="cancelar.emit()"
+    >
+      Cancel
+    </button>
+    <button type="submit" class="h-[38px] rounded-[5px] bg-primario px-4 text-sm font-medium text-white hover:bg-primario-oscuro">
+      {{ pipeline() ? 'Save Changes' : 'Add Pipeline' }}
+    </button>
+  </div>
+</form>

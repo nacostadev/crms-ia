@@ -1,0 +1,129 @@
+<header
+  class="sticky top-0 z-20 flex h-[62px] items-center gap-2.5 border-b border-linea bg-superficie px-4 sm:px-6"
+>
+  <button
+    type="button"
+    class="grid size-[38px] shrink-0 place-items-center rounded-[5px] border border-linea text-texto shadow-suave hover:bg-fondo lg:hidden"
+    (click)="abrirMenu.emit()"
+    aria-label="Open menu"
+  >
+    <app-icon name="menu-2" [size]="18" />
+  </button>
+
+  <label class="relative hidden w-full max-w-[303px] sm:block">
+    <span class="sr-only">Search</span>
+    <input
+      type="search"
+      placeholder="Search"
+      class="h-[38px] w-full rounded-[5px] border border-linea bg-superficie pl-2 pr-8 text-sm text-texto shadow-suave outline-none placeholder:text-placeholder focus:border-primario"
+    />
+    <app-icon name="command" [size]="14" class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-texto" />
+  </label>
+
+  <div class="ml-auto flex items-center gap-2 sm:gap-3">
+    <!-- En mobile el selector de tema queda suelto: el resto de accesos rápidos se ocultan -->
+    <button
+      type="button"
+      class="grid size-[38px] place-items-center rounded-[5px] border border-linea bg-superficie text-texto shadow-suave hover:bg-fondo md:hidden"
+      (click)="theme.alternar()"
+      [attr.aria-label]="theme.oscuro() ? 'Light mode' : 'Dark mode'"
+    >
+      <app-icon [name]="theme.oscuro() ? 'sun' : 'moon'" />
+    </button>
+
+    <div class="hidden items-center gap-2 md:flex">
+      <button
+        type="button"
+        class="grid size-[38px] place-items-center rounded-[5px] border border-linea bg-superficie text-texto shadow-suave hover:bg-fondo"
+        (click)="alternarPantallaCompleta()"
+        [attr.aria-label]="pantallaCompleta() ? 'Exit full screen' : 'Full screen'"
+      >
+        <app-icon [name]="pantallaCompleta() ? 'minimize' : 'maximize'" />
+      </button>
+
+      <div class="flex h-[38px] items-center gap-1 rounded-[5px] border border-linea bg-superficie px-1.5 shadow-suave" role="group" aria-label="Theme">
+        <button
+          type="button"
+          class="grid size-6 place-items-center rounded-[5px] transition"
+          [class]="theme.tema() === 'claro' ? 'bg-exito text-white' : 'text-texto hover:bg-fondo'"
+          (click)="theme.cambiar('claro')"
+          [attr.aria-pressed]="theme.tema() === 'claro'"
+          aria-label="Light mode"
+        >
+          <app-icon name="sun" />
+        </button>
+        <button
+          type="button"
+          class="grid size-6 place-items-center rounded-[5px] transition"
+          [class]="theme.tema() === 'oscuro' ? 'bg-exito text-white' : 'text-texto hover:bg-fondo'"
+          (click)="theme.cambiar('oscuro')"
+          [attr.aria-pressed]="theme.tema() === 'oscuro'"
+          aria-label="Dark mode"
+        >
+          <app-icon name="moon" />
+        </button>
+      </div>
+
+      <button type="button" class="grid size-[38px] place-items-center rounded-[5px] bg-menta text-texto shadow-suave hover:brightness-95" aria-label="Quick add">
+        <app-icon name="layout-grid-add" />
+      </button>
+      <button type="button" class="grid size-[38px] place-items-center rounded-[5px] bg-lavanda text-texto shadow-suave hover:brightness-95" aria-label="Help">
+        <app-icon name="help-hexagon" />
+      </button>
+      <button type="button" class="grid size-[38px] place-items-center rounded-[5px] bg-crema text-texto shadow-suave hover:brightness-95" aria-label="Reports">
+        <app-icon name="chart-pie" />
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2.5">
+      <button
+        type="button"
+        class="relative grid size-[38px] place-items-center rounded-[5px] border border-linea bg-superficie text-texto shadow-suave hover:bg-fondo"
+        aria-label="Messages, 14 unread"
+      >
+        <app-icon name="message-circle-exclamation" />
+        <span class="absolute right-[6px] top-[7px] grid size-3 place-items-center rounded-full border border-superficie bg-primario text-[6px] leading-none text-white">14</span>
+      </button>
+      <button
+        type="button"
+        class="relative grid size-[38px] place-items-center rounded-[5px] border border-linea bg-superficie text-texto shadow-suave hover:bg-fondo"
+        aria-label="Notifications, 10 unread"
+      >
+        <app-icon name="bell" />
+        <span class="absolute right-[6px] top-[7px] grid size-3 place-items-center rounded-full border border-superficie bg-primario text-[6px] leading-none text-white">10</span>
+      </button>
+
+      @if (session.usuario(); as usuario) {
+        <div class="relative">
+          <button
+            type="button"
+            class="relative block size-[38px]"
+            (click)="menuUsuarioAbierto.set(!menuUsuarioAbierto())"
+            [attr.aria-expanded]="menuUsuarioAbierto()"
+            aria-label="User menu"
+          >
+            <img src="assets/images/avatar.jpg" alt="" class="size-[38px] rounded-[5px] object-cover" />
+            <span class="absolute -bottom-0.5 -right-0.5 size-2 rounded-full border border-superficie bg-exito"></span>
+          </button>
+
+          @if (menuUsuarioAbierto()) {
+            <div class="fixed inset-0 z-10" (click)="menuUsuarioAbierto.set(false)"></div>
+            <div class="animate-aparecer absolute right-0 z-20 mt-2 w-56 rounded-[5px] border border-linea bg-superficie p-2 shadow-lg">
+              <div class="border-b border-linea px-3 pb-2 pt-1">
+                <p class="truncate text-sm font-medium text-texto">{{ usuario.nombre }}</p>
+                <p class="truncate text-xs text-texto-suave">{{ usuario.correo }}</p>
+              </div>
+              <button
+                type="button"
+                class="mt-1 flex w-full items-center gap-2 rounded-[5px] px-3 py-2 text-left text-sm text-primario hover:bg-primario-suave"
+                (click)="cerrarSesion()"
+              >
+                <app-icon name="logout" /> Logout
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</header>

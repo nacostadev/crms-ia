@@ -1,0 +1,193 @@
+@if (menuAbierto()) {
+  <div class="fixed inset-0 z-20" (click)="menuAbierto.set(null)"></div>
+}
+
+<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+  <div class="flex flex-wrap items-center gap-3">
+    <!-- Filter -->
+    <div class="relative">
+      <button
+        type="button"
+        class="flex h-[38px] items-center gap-2.5 rounded-[5px] border border-linea bg-superficie px-2 text-sm text-texto shadow-suave hover:bg-fondo"
+        (click)="alternar('filtro')"
+        [attr.aria-expanded]="menuAbierto() === 'filtro'"
+      >
+        <span class="flex items-center gap-2">
+          <app-icon name="filter" />
+          Filter
+          @if (filtrosActivos()) {
+            <span class="grid size-[18px] place-items-center rounded-full bg-primario text-[11px] font-medium text-white">{{ filtrosActivos() }}</span>
+          }
+        </span>
+        <app-icon name="chevron-down" [size]="14" />
+      </button>
+
+      @if (menuAbierto() === 'filtro') {
+        <div class="animate-aparecer absolute left-0 z-30 mt-2 w-64 rounded-[5px] border border-linea bg-superficie p-4 shadow-lg">
+          <p class="mb-2 text-[13px] font-semibold text-texto">Status</p>
+          <div class="mb-4 flex flex-wrap gap-2">
+            @for (opcion of opcionesEstado; track opcion.id) {
+              <button
+                type="button"
+                class="rounded-[5px] border px-2.5 py-1 text-sm transition"
+                [class]="
+                  estado() === opcion.id
+                    ? 'border-primario bg-primario-suave text-primario'
+                    : 'border-linea text-texto-suave hover:bg-fondo'
+                "
+                (click)="estado.set(opcion.id)"
+              >
+                {{ opcion.etiqueta }}
+              </button>
+            }
+          </div>
+
+          <p class="mb-2 text-[13px] font-semibold text-texto">Stages</p>
+          <ul class="space-y-2">
+            @for (etapa of opcionesEtapa; track etapa.id) {
+              <li>
+                <label class="flex cursor-pointer items-center gap-2 text-sm text-texto">
+                  <input
+                    type="checkbox"
+                    class="size-4 rounded accent-primario"
+                    [checked]="etapas().has(etapa.id)"
+                    (change)="alternarEtapa(etapa.id)"
+                  />
+                  <span class="h-[5px] w-6 rounded-full" [style.background]="etapa.color"></span>
+                  {{ etapa.etiqueta }}
+                </label>
+              </li>
+            }
+          </ul>
+
+          <button type="button" class="mt-4 text-sm font-medium text-primario hover:underline" (click)="limpiarFiltros()">
+            Reset filters
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Date Range -->
+    <div class="relative">
+      <button
+        type="button"
+        class="flex h-[38px] items-center gap-2 rounded-[5px] border border-linea bg-superficie px-2 text-sm text-texto shadow-suave hover:bg-fondo"
+        (click)="alternar('fecha')"
+        [attr.aria-expanded]="menuAbierto() === 'fecha'"
+      >
+        <app-icon name="calendar-due" />
+        {{ textoRango() }}
+      </button>
+
+      @if (menuAbierto() === 'fecha') {
+        <div class="animate-aparecer absolute left-0 z-30 mt-2 w-72 rounded-[5px] border border-linea bg-superficie p-4 shadow-lg">
+          <div class="grid grid-cols-2 gap-3">
+            <label class="text-xs font-medium text-texto">
+              From
+              <input
+                type="date"
+                class="mt-1 h-[38px] w-full rounded-[5px] border border-linea px-2 text-sm outline-none focus:border-primario"
+                [value]="borradorDesde()"
+                (input)="borradorDesde.set($any($event.target).value)"
+              />
+            </label>
+            <label class="text-xs font-medium text-texto">
+              To
+              <input
+                type="date"
+                class="mt-1 h-[38px] w-full rounded-[5px] border border-linea px-2 text-sm outline-none focus:border-primario"
+                [value]="borradorHasta()"
+                (input)="borradorHasta.set($any($event.target).value)"
+              />
+            </label>
+          </div>
+          <div class="mt-4 flex justify-end gap-2">
+            <button type="button" class="rounded-[5px] border border-linea px-3 py-1.5 text-sm hover:bg-fondo" (click)="limpiarRango()">
+              Clear
+            </button>
+            <button
+              type="button"
+              class="rounded-[5px] bg-primario px-3 py-1.5 text-sm font-medium text-white hover:bg-primario-oscuro disabled:opacity-50"
+              [disabled]="!borradorDesde() || !borradorHasta()"
+              (click)="aplicarRango()"
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <!-- Sort By -->
+    <div class="relative">
+      <button
+        type="button"
+        class="flex h-[38px] items-center gap-2.5 rounded-[5px] border border-linea bg-superficie px-2 text-sm text-texto shadow-suave hover:bg-fondo"
+        (click)="alternar('orden')"
+        [attr.aria-expanded]="menuAbierto() === 'orden'"
+      >
+        <span class="flex items-center gap-2">
+          <app-icon name="sort-ascending-2" />
+          Sort By
+        </span>
+        <app-icon name="chevron-down" [size]="14" />
+      </button>
+
+      @if (menuAbierto() === 'orden') {
+        <ul class="animate-aparecer absolute right-0 z-30 mt-2 w-52 rounded-[5px] border border-linea bg-superficie p-1.5 shadow-lg sm:left-0 sm:right-auto">
+          @for (opcion of opcionesOrden; track opcion.etiqueta) {
+            <li>
+              <button
+                type="button"
+                class="flex w-full items-center justify-between rounded-[5px] px-3 py-2 text-left text-sm hover:bg-fondo"
+                [class.text-primario]="esOrdenActual(opcion.orden)"
+                (click)="elegirOrden(opcion.orden)"
+              >
+                {{ opcion.etiqueta }}
+                @if (esOrdenActual(opcion.orden)) {
+                  <app-icon name="check" [size]="14" [stroke]="2" />
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    <!-- Manage Columns -->
+    <div class="relative">
+      <button
+        type="button"
+        class="flex h-[38px] items-center gap-2 rounded-[5px] bg-violeta-suave px-2 text-sm text-violeta hover:brightness-95"
+        (click)="alternar('columnas')"
+        [attr.aria-expanded]="menuAbierto() === 'columnas'"
+      >
+        <app-icon name="columns-3" />
+        Manage Columns
+      </button>
+
+      @if (menuAbierto() === 'columnas') {
+        <ul class="animate-aparecer absolute right-0 z-30 mt-2 w-56 space-y-1 rounded-[5px] border border-linea bg-superficie p-3 shadow-lg">
+          @for (columna of opcionesColumna; track columna.id) {
+            <li>
+              <label class="flex cursor-pointer items-center justify-between gap-2 rounded-[5px] px-1 py-1.5 text-sm text-texto">
+                {{ columna.etiqueta }}
+                <input
+                  type="checkbox"
+                  class="peer sr-only"
+                  [checked]="!columnasOcultas().has(columna.id)"
+                  (change)="alternarColumna(columna.id)"
+                />
+                <span
+                  class="relative h-5 w-9 rounded-full bg-linea transition peer-checked:bg-exito after:absolute after:left-0.5 after:top-0.5 after:size-4 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-4"
+                ></span>
+              </label>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+:root {
+  // Marca
+  --primario: #e41f07;
+  --primario-suave: #fce9e6;
+
+  // Neutros
+  --fondo: #f7f8f9;
+  --superficie: #ffffff;
+  --linea: #e8e8e8;
+  --texto: #1f2020;
+  --texto-suave: #707070;
+
+  // Tipografías
+  --font-body: 'Golos Text', system-ui, sans-serif;
+
+  // Escala
+  --fs-body: 0.875rem;
+  --sombra-suave: 0 4px 4px rgb(219 219 219 / 0.25);
+}
+
+// Espejo de .dark en tailwind-theme.css para los estilos SCSS.
+:root.dark {
+  --primario-suave: #3a1712;
+  --fondo: #0f1114;
+  --superficie: #181b20;
+  --linea: #2b3038;
+  --texto: #eceef1;
+  --texto-suave: #a3a8b0;
+  --sombra-suave: 0 2px 4px rgb(0 0 0 / 0.18);
+}

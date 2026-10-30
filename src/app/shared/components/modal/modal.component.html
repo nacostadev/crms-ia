@@ -1,0 +1,26 @@
+<div class="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true">
+  <div class="absolute inset-0 bg-black/50" (click)="cerrar.emit()"></div>
+
+  <div
+    class="animate-aparecer relative max-h-[92vh] w-full overflow-y-auto rounded-t-[10px] bg-superficie p-6 shadow-xl sm:max-w-lg sm:rounded-[10px]"
+  >
+    <div class="mb-5 flex items-start justify-between gap-4">
+      <div>
+        <h3 class="text-lg font-bold text-texto">{{ titulo() }}</h3>
+        @if (descripcion()) {
+          <p class="mt-1 text-sm text-texto-suave">{{ descripcion() }}</p>
+        }
+      </div>
+      <button
+        type="button"
+        class="rounded-[5px] p-1.5 text-texto-suave hover:bg-fondo"
+        (click)="cerrar.emit()"
+        aria-label="Close"
+      >
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+      </button>
+    </div>
+
+    <ng-content />
+  </div>
+</div>

@@ -1,0 +1,138 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-5" novalidate>
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-6">
+      <header class="flex flex-col gap-2.5">
+        <h1 class="text-[24.5px] font-bold leading-[29px] text-texto">Sign In</h1>
+        <p class="text-sm text-texto-suave">Access the CRMS panel using your email and passcode.</p>
+      </header>
+
+      @if (error()) {
+        <div
+          class="animate-aparecer rounded-[5px] border border-primario/30 bg-primario-suave px-3 py-2 text-sm text-primario"
+          role="alert"
+        >
+          {{ error() }}
+        </div>
+      }
+
+      <div class="flex flex-col gap-5">
+        <div class="flex flex-col gap-1">
+          <label for="correo" class="text-sm font-medium text-texto">Email Address</label>
+          <div
+            class="flex h-[38px] items-center gap-2 rounded-[5px] border bg-superficie px-2 shadow-suave transition focus-within:border-primario"
+            [class.border-linea]="!invalido('correo')"
+            [class.border-primario]="invalido('correo')"
+          >
+            <input
+              id="correo"
+              type="email"
+              formControlName="correo"
+              autocomplete="email"
+              placeholder="Placeholder"
+              class="min-w-0 flex-1 bg-transparent text-sm text-texto outline-none placeholder:text-placeholder"
+            />
+            <app-icon name="mail" [size]="14" class="text-texto" />
+          </div>
+          @if (invalido('correo')) {
+            <p class="text-xs text-primario">
+              {{ form.controls.correo.hasError('required') ? 'Email is required.' : 'Enter a valid email.' }}
+            </p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="password" class="text-sm font-medium text-texto">Password</label>
+          <div
+            class="flex h-[38px] items-center gap-2 rounded-[5px] border bg-superficie px-2 shadow-suave transition focus-within:border-primario"
+            [class.border-linea]="!invalido('password')"
+            [class.border-primario]="invalido('password')"
+          >
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              autocomplete="current-password"
+              placeholder="Placeholder"
+              class="min-w-0 flex-1 bg-transparent text-sm text-texto outline-none placeholder:text-placeholder"
+            />
+            <app-icon name="user" [size]="14" class="text-texto" />
+          </div>
+          @if (invalido('password')) {
+            <p class="text-xs text-primario">
+              {{
+                form.controls.password.hasError('required')
+                  ? 'Password is required.'
+                  : 'Password must be at least 6 characters.'
+              }}
+            </p>
+          }
+        </div>
+
+        <div class="flex items-center justify-between gap-5">
+          <label class="flex cursor-pointer items-center gap-1 px-3 py-1 text-sm text-texto">
+            <input type="checkbox" formControlName="recordar" class="peer sr-only" />
+            <span
+              class="grid size-4 place-items-center rounded-[5px] border border-linea bg-superficie text-white peer-checked:border-primario peer-checked:bg-primario peer-focus-visible:ring-2 peer-focus-visible:ring-primario/40"
+            >
+              @if (form.controls.recordar.value) {
+                <app-icon name="check" [size]="10" [stroke]="3" />
+              }
+            </span>
+            Remember Me
+          </label>
+          <a href="#" (click)="$event.preventDefault()" class="text-sm text-rojo-enlace hover:underline"
+            >Forgot Password?</a
+          >
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="cargando()"
+          class="flex h-[33px] items-center justify-center gap-2 rounded-[5px] bg-primario px-4 text-sm font-medium text-white transition hover:bg-primario-oscuro disabled:cursor-wait disabled:opacity-80"
+        >
+          @if (cargando()) {
+            <span class="size-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
+          }
+          Sign In
+        </button>
+      </div>
+    </div>
+
+    <p class="font-nunito text-sm text-texto-suave">
+      New on our platform?
+      <a href="#" (click)="$event.preventDefault()" class="font-bold text-azul-enlace hover:underline"
+        >Create an account</a
+      >
+    </p>
+  </div>
+
+  <div class="flex items-center justify-center gap-1.5" aria-hidden="true">
+    <span class="h-px w-[21px] bg-divisor"></span>
+    <span class="text-sm font-bold text-texto-suave">OR</span>
+    <span class="h-px w-[21px] bg-divisor"></span>
+  </div>
+
+  <div class="grid grid-cols-3 gap-2.5">
+    <button
+      type="button"
+      class="grid h-[54px] place-items-center rounded-[10px] bg-facebook transition hover:opacity-90"
+      aria-label="Continue with Facebook"
+    >
+      <img src="assets/icons/facebook.svg" alt="" width="24" height="24" />
+    </button>
+    <button
+      type="button"
+      class="grid h-[54px] place-items-center rounded-[10px] border border-linea bg-superficie transition hover:bg-fondo"
+      aria-label="Continue with Google"
+    >
+      <img src="assets/icons/google.svg" alt="" width="24" height="24" />
+    </button>
+    <button
+      type="button"
+      class="grid h-[54px] place-items-center rounded-[10px] bg-apple transition dark:ring-1 dark:ring-linea hover:opacity-90"
+      aria-label="Continue with Apple"
+    >
+      <img src="assets/icons/apple.svg" alt="" width="24" height="24" />
+    </button>
+  </div>
+</form>

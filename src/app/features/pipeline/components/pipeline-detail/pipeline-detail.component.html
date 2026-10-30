@@ -1,0 +1,67 @@
+@let p = pipeline();
+
+<div class="flex flex-col gap-5">
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="rounded-[5px] border border-linea bg-fondo px-1.5 py-0.5 text-xs font-medium text-texto-suave">{{ p.id }}</span>
+    <span
+      class="rounded-[5px] px-1.5 py-0.5 text-xs font-medium text-white"
+      [class]="p.estado === 'active' ? 'bg-exito' : 'bg-peligro'"
+    >
+      {{ p.estado === 'active' ? 'Active' : 'Inactive' }}
+    </span>
+  </div>
+
+  <dl class="grid grid-cols-1 gap-px overflow-hidden rounded-[5px] border border-linea bg-linea sm:grid-cols-2">
+    <div class="bg-superficie p-3">
+      <dt class="text-xs text-texto-suave">Pipeline Name</dt>
+      <dd class="mt-1 text-sm font-medium text-texto">{{ p.nombre }}</dd>
+    </div>
+    <div class="bg-superficie p-3">
+      <dt class="text-xs text-texto-suave">Stage</dt>
+      <dd class="mt-1 flex items-center gap-2 text-sm text-texto">
+        <span class="h-[5px] w-[59px] rounded-full" [style.background]="etapa().color"></span>
+        {{ etapa().etiqueta }}
+      </dd>
+    </div>
+    <div class="bg-superficie p-3">
+      <dt class="text-xs text-texto-suave">Total Deal Value</dt>
+      <dd class="mt-1 text-sm font-medium tabular-nums text-texto">{{ formatearMonto(p.valorTotal) }}</dd>
+    </div>
+    <div class="bg-superficie p-3">
+      <dt class="text-xs text-texto-suave">No of Deals</dt>
+      <dd class="mt-1 text-sm font-medium tabular-nums text-texto">{{ p.nroDeals }}</dd>
+    </div>
+    <div class="bg-superficie p-3">
+      <dt class="text-xs text-texto-suave">Average Deal Value</dt>
+      <dd class="mt-1 text-sm font-medium tabular-nums text-texto">{{ promedio() }}</dd>
+    </div>
+    <div class="bg-superficie p-3">
+      <dt class="text-xs text-texto-suave">Created Date</dt>
+      <dd class="mt-1 text-sm font-medium text-texto">{{ formatearFecha(p.fechaCreacion) }}</dd>
+    </div>
+  </dl>
+
+  <div class="flex flex-wrap justify-end gap-2">
+    <button
+      type="button"
+      class="flex h-[38px] items-center gap-1.5 rounded-[5px] border border-peligro px-4 text-sm font-medium text-peligro hover:bg-primario-suave"
+      (click)="eliminar.emit(p)"
+    >
+      <app-icon name="trash" [size]="14" /> Delete
+    </button>
+    <button
+      type="button"
+      class="flex h-[38px] items-center gap-1.5 rounded-[5px] border border-linea px-4 text-sm font-medium text-texto hover:bg-fondo"
+      (click)="cerrar.emit()"
+    >
+      Close
+    </button>
+    <button
+      type="button"
+      class="flex h-[38px] items-center gap-1.5 rounded-[5px] bg-primario px-4 text-sm font-medium text-white hover:bg-primario-oscuro"
+      (click)="editar.emit(p)"
+    >
+      <app-icon name="edit" [size]="14" /> Edit
+    </button>
+  </div>
+</div>

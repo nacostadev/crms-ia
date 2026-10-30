@@ -1,0 +1,13 @@
+<footer
+  class="flex flex-col items-center gap-1 border-t border-linea bg-superficie px-6 py-2 text-sm text-texto-suave sm:flex-row sm:justify-between"
+>
+  <p>
+    Copyright © 2025 <a routerLink="/pipeline" class="text-primario underline">CRMS</a>
+    <span class="mx-1.5 text-texto-tenue">·</span>Developed by <span class="font-medium text-texto">nacostadev</span>
+  </p>
+  <nav class="flex items-center gap-3" aria-label="Footer">
+    @for (enlace of enlaces; track enlace) {
+      <a href="#" (click)="$event.preventDefault()" class="hover:text-texto">{{ enlace }}</a>
+    }
+  </nav>
+</footer>

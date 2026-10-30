@@ -1,0 +1,5 @@
+// En Figma la foto cubre toda la tarjeta y el panel del formulario la desenfoca por encima;
+// el encuadre se corre a la derecha para que la persona quede en la mitad visible.
+.login-foto {
+  background: url('/assets/images/login-bg.jpg') 72% center / cover no-repeat;
+}
